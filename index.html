@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Divine Counter | Universal Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-main: #0a0908;
@@ -17,7 +17,7 @@
             --border-glow: rgba(251, 146, 60, 0.15);
             --aura-color: rgba(251, 146, 60, 0.08);
             --btn-bg: linear-gradient(145deg, #1a1614, #0a0908);
-            --modal-bg: rgba(0, 0, 0, 0.95);
+            --modal-bg: rgba(10, 9, 8, 0.95);
             --toast-bg: #fb923c;
             --toast-text: #000;
             --chart-bar: #334155;
@@ -50,6 +50,7 @@
             user-select: none;
             overflow-x: hidden;
             height: 100vh;
+            height: 100dvh; 
         }
         .serif { font-family: 'Playfair Display', serif; }
         
@@ -66,8 +67,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 90vw;
-            height: 90vw;
+            width: 90vmin;
+            height: 90vmin;
             opacity: 0.05;
             color: var(--accent);
             z-index: -1;
@@ -80,28 +81,43 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), inset 0 0 20px var(--border-glow); border-color: var(--border-glow); }
+            50% { box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15), inset 0 0 30px var(--aura-color); border-color: var(--accent); }
+        }
+
         .counter-btn {
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
             background: var(--btn-bg);
             border: 1px solid var(--border-glow);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), inset 0 0 20px var(--border-glow);
+            animation: breathe 4s ease-in-out infinite;
+            aspect-ratio: 1/1;
         }
         .counter-btn:active {
             transform: scale(0.96);
+            animation: none;
+            border-color: var(--accent);
             box-shadow: 0 0 40px var(--aura-color);
         }
 
         .gold-glow { text-shadow: 0 0 15px var(--gold); }
 
         .modal-overlay {
-            backdrop-filter: blur(12px);
-            background: var(--modal-bg);
+            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.6);
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glow);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+            background: var(--modal-bg);
+            border-top: 1px solid var(--border-glow);
+            box-shadow: 0 -10px 40px -10px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .progress-fill {
@@ -118,32 +134,37 @@
             width: 100%;
             color: var(--text-primary);
         }
+        .divine-input:focus { outline: none; border-color: var(--accent); }
 
         #toast {
             position: fixed;
-            bottom: 32px;
+            bottom: 40px;
             left: 50%;
-            transform: translateX(-50%) translateY(120px);
+            transform: translateX(-50%) translateY(100px);
             background: var(--toast-bg);
             color: var(--toast-text);
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 99px;
             font-size: 11px;
-            font-weight: 800;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.05em;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 200;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            max-width: 90vw;
+            text-align: center;
         }
         #toast.visible { transform: translateX(-50%) translateY(0); }
 
         .active-indicator {
-            width: 8px; height: 8px;
+            width: 6px; height: 6px;
             background: var(--accent);
             border-radius: 50%;
             margin-right: 8px;
-            box-shadow: 0 0 8px var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+            flex-shrink: 0;
         }
 
         /* Chart */
@@ -154,17 +175,131 @@
         }
         .chart-bar.filled {
             background-color: var(--chart-bar-active);
-            box-shadow: 0 0 10px var(--border-glow);
+            box-shadow: 0 0 15px var(--border-glow);
         }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; opacity: 0.5; }
 
-        .help-section h4 { font-weight: 700; color: var(--accent); margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .help-section h4 { font-weight: 700; color: var(--accent); margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
         .help-section p { font-size: 0.9rem; opacity: 0.8; line-height: 1.6; margin-bottom: 0.75rem; }
         .help-section ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 1rem; }
         .help-section li { font-size: 0.85rem; opacity: 0.7; margin-bottom: 0.4rem; }
+
+        /* RESPONSIVE IMPROVEMENTS */
+        
+        @media (max-width: 374px) {
+            #toast { font-size: 9px; padding: 8px 16px; bottom: 20px; }
+            .counter-btn { min-width: 180px !important; min-height: 180px !important; }
+        }
+
+        @media (min-width: 576px) {
+            .modal-container {
+                border-radius: 2.5rem;
+                max-height: 90vh;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .modal-container {
+                max-width: 600px;
+            }
+            
+            #toast {
+                font-size: 12px;
+                padding: 12px 24px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            body {
+                overflow: hidden;
+            }
+            
+            .counter-btn {
+                max-width: 450px !important;
+                max-h: 450px !important;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .counter-btn {
+                max-width: 500px !important;
+                max-height: 500px !important;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 600px) {
+            .counter-btn {
+                max-width: 45vh !important;
+                max-height: 45vh !important;
+                min-width: 180px !important;
+                min-height: 180px !important;
+            }
+            
+            main {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            
+            header {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+        }
+
+        @media (orientation: landscape) and (max-height: 450px) {
+            .counter-btn {
+                max-width: 40vh !important;
+                max-height: 40vh !important;
+                min-width: 160px !important;
+                min-height: 160px !important;
+            }
+            
+            #session-display {
+                font-size: 15vmin !important;
+            }
+        }
+
+        .mantra-card-actions {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: nowrap;
+        }
+
+        @media (max-width: 374px) {
+            .mantra-card-actions button {
+                padding: 0.375rem;
+            }
+            
+            .mantra-card-actions svg {
+                width: 0.875rem;
+                height: 0.875rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .serif.text-xl { font-size: 1.125rem; }
+        }
+
+        .truncate-responsive {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 374px) {
+            .truncate-responsive {
+                max-width: 120px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .modal-container {
+                max-height: 95vh;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center overflow-hidden">
@@ -177,97 +312,105 @@
 
     <div id="toast">Divine Message</div>
 
-    <header class="w-full max-w-2xl px-6 py-4 sm:p-8 flex justify-between items-center z-20 shrink-0">
-        <div>
-            <h1 class="serif text-2xl sm:text-3xl tracking-tight gold-glow">Divine Counter</h1>
-            <p id="active-mantra-subtitle" class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] opacity-40 mt-1">Sadhana Loading...</p>
+    <!-- Header -->
+    <header class="w-full max-w-3xl px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 lg:p-6 flex justify-between items-center z-20 shrink-0">
+        <div class="min-w-0 flex-1 pr-2">
+            <h1 class="serif text-lg sm:text-xl md:text-2xl lg:text-3xl tracking-tight gold-glow truncate-responsive">Divine Counter</h1>
+            <p id="active-mantra-subtitle" class="text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.25em] lg:tracking-[0.3em] opacity-50 mt-0.5 sm:mt-1 truncate">Sadhana Loading...</p>
         </div>
-        <div class="flex gap-2 sm:gap-3">
-            <button title="Weekly Insights" onclick="toggleModal('stats-modal')" class="p-3 sm:p-4 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-slate-400">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <div class="flex gap-1.5 sm:gap-2 md:gap-2.5 lg:gap-3 flex-shrink-0">
+            <button title="Weekly Insights" onclick="toggleModal('stats-modal')" class="p-1.5 sm:p-2 md:p-2.5 lg:p-3 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-current opacity-70 hover:opacity-100">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
             </button>
-            <button title="User Manual" onclick="toggleModal('help-modal')" class="p-3 sm:p-4 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-slate-400">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <button title="User Manual" onclick="toggleModal('help-modal')" class="p-1.5 sm:p-2 md:p-2.5 lg:p-3 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-current opacity-70 hover:opacity-100">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </button>
-            <button title="Toggle Theme" onclick="app.toggleTheme()" class="p-3 sm:p-4 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-slate-400">
-                <svg id="theme-icon-sun" class="w-5 h-5 sm:w-6 sm:h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z"></path></svg>
-                <svg id="theme-icon-moon" class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            <button title="Toggle Theme" onclick="app.toggleTheme()" class="p-1.5 sm:p-2 md:p-2.5 lg:p-3 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-current opacity-70 hover:opacity-100">
+                <svg id="theme-icon-sun" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 lg:w-5 lg:h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z"></path></svg>
+                <svg id="theme-icon-moon" class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
-            <button title="Manage Mantras" onclick="toggleModal('mantra-list-modal')" class="p-3 sm:p-4 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-slate-400">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+            <button title="Manage Mantras" onclick="toggleModal('mantra-list-modal')" class="p-1.5 sm:p-2 md:p-2.5 lg:p-3 bg-white/5 border border-slate-500/10 rounded-full hover:border-orange-500/50 transition-all text-current opacity-70 hover:opacity-100">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
             </button>
         </div>
     </header>
 
-    <main class="flex-grow flex flex-col items-center justify-evenly w-full max-w-md px-6 pb-6">
+    <!-- Main Content Area -->
+    <main class="flex-grow flex flex-col items-center justify-between w-full max-w-md px-4 sm:px-6 pb-4 sm:pb-6 pt-1 sm:pt-2 md:justify-evenly">
         
-        <div class="w-full text-center space-y-4 sm:space-y-6">
-            <h2 id="display-name" class="serif text-4xl sm:text-5xl italic tracking-wide break-words line-clamp-2">—</h2>
-            <div id="goal-section" class="w-48 sm:w-56 mx-auto hidden">
-                <div class="h-1 bg-black/5 rounded-full overflow-hidden border border-slate-500/10">
+        <!-- Stats -->
+        <div class="w-full text-center space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
+            <h2 id="display-name" class="serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl italic tracking-wide break-words px-2 leading-tight min-h-[2rem] sm:min-h-[2.5rem]">—</h2>
+            
+            <div id="goal-section" class="w-3/4 max-w-[200px] mx-auto hidden">
+                <div class="h-1 bg-white/10 rounded-full overflow-hidden">
                     <div id="goal-bar" class="progress-fill h-full" style="width: 0%"></div>
                 </div>
-                <p id="goal-text" class="text-[9px] uppercase tracking-[0.3em] font-black mt-2 sm:mt-3 opacity-40">Daily Goal Progress</p>
+                <p id="goal-text" class="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-[0.2em] sm:tracking-[0.25em] font-bold mt-1.5 sm:mt-2 opacity-50">Daily Goal</p>
             </div>
             
-            <div class="flex justify-center gap-8 sm:gap-16 pt-2 w-full">
-                <!-- Left: Daily Rounds (Based on Session) -->
-                <div class="text-center w-1/2">
-                    <span id="rounds-count" class="block text-xl sm:text-2xl font-semibold gold-glow">0</span>
-                    <span class="text-[8px] sm:text-[9px] uppercase tracking-widest font-bold opacity-40">Today's Rounds</span>
+            <div class="flex justify-center items-start gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-1 sm:pt-2 w-full">
+                <!-- Left: Daily Rounds -->
+                <div class="text-center flex-1 min-w-0">
+                    <span id="rounds-count" class="block text-lg sm:text-xl md:text-2xl lg:text-3xl font-light gold-glow leading-none mb-0.5 sm:mb-1">0</span>
+                    <span class="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-wider sm:tracking-widest font-bold opacity-50">Today's Rounds</span>
                 </div>
-                <div class="w-px bg-slate-500/20"></div>
-                <!-- Right: Lifetime Total & Lifetime Rounds -->
-                <div class="text-center w-1/2">
-                    <span id="lifetime-count" class="block text-xl sm:text-2xl font-semibold gold-glow">0</span>
-                    <div class="flex flex-col">
-                        <span class="text-[8px] sm:text-[9px] uppercase tracking-widest font-bold opacity-40">Lifetime Taps</span>
-                        <span id="lifetime-rounds-sub" class="text-[7px] sm:text-[8px] uppercase tracking-widest font-bold opacity-30 mt-0.5">0 Rounds</span>
+                <!-- Divider -->
+                <div class="w-px h-6 sm:h-8 bg-white/10 mt-0.5 sm:mt-1 flex-shrink-0"></div>
+                <!-- Right: Lifetime Total -->
+                <div class="text-center flex-1 min-w-0">
+                    <span id="lifetime-count" class="block text-lg sm:text-xl md:text-2xl lg:text-3xl font-light gold-glow leading-none mb-0.5 sm:mb-1">0</span>
+                    <div class="flex flex-col items-center">
+                        <span class="text-[7px] sm:text-[8px] md:text-[9px] uppercase tracking-wider sm:tracking-widest font-bold opacity-50">Lifetime Taps</span>
+                        <span id="lifetime-rounds-sub" class="text-[6px] sm:text-[7px] md:text-[8px] uppercase tracking-wider sm:tracking-widest font-bold opacity-30 mt-0.5">0 Rounds</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="relative group my-4">
-            <div class="absolute -inset-6 sm:-inset-10 bg-orange-500/5 rounded-full blur-2xl group-active:bg-orange-500/10 transition-all opacity-50"></div>
-            <button id="main-tap-area" onclick="app.increment()" class="counter-btn w-64 h-64 sm:w-80 sm:h-80 rounded-full flex flex-col items-center justify-center relative z-10 overflow-hidden">
-                <span id="session-display" class="text-8xl sm:text-9xl font-light serif gold-glow">0</span>
-                <div class="w-10 sm:w-12 h-0.5 bg-slate-500/10 my-3 sm:my-4"></div>
-                <span class="text-[9px] sm:text-[10px] uppercase tracking-[0.6em] font-black opacity-30">Daily Session</span>
-                <div id="ripple-anchor" class="absolute inset-0 pointer-events-none"></div>
+        <!-- Tap Area -->
+        <div class="relative group flex items-center justify-center flex-grow max-h-[45vh] sm:max-h-[50vh] md:max-h-none w-full" id="ripple-anchor">
+            <div class="absolute -inset-6 sm:-inset-8 bg-orange-500/5 rounded-full blur-2xl group-active:bg-orange-500/10 transition-all opacity-50 pointer-events-none"></div>
+            <button id="main-tap-area" onclick="app.increment()" class="counter-btn w-[55vmin] h-[55vmin] sm:w-[60vmin] sm:h-[60vmin] min-w-[200px] min-h-[200px] sm:min-w-[220px] sm:min-h-[220px] max-w-[280px] max-h-[280px] sm:max-w-[320px] sm:max-h-[320px] md:max-w-[380px] md:max-h-[380px] lg:max-w-[400px] lg:max-h-[400px] rounded-full flex flex-col items-center justify-center relative z-10 overflow-hidden outline-none tap-highlight-transparent">
+                <span id="session-display" class="text-[18vmin] sm:text-[20vmin] md:text-8xl lg:text-9xl font-thin serif gold-glow select-none leading-none">0</span>
+                <div class="w-8 sm:w-10 md:w-11 lg:w-12 h-px bg-current opacity-20 my-1.5 sm:my-2 md:my-3 lg:my-4"></div>
+                <span class="text-[2vmin] sm:text-[2.5vmin] md:text-[9px] lg:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] md:tracking-[0.4em] lg:tracking-[0.5em] font-bold opacity-40 select-none">Daily Session</span>
             </button>
         </div>
 
-        <div class="w-full">
-            <button onclick="toggleModal('history-modal')" class="w-full py-4 sm:py-5 bg-slate-900 text-white dark:bg-orange-600 dark:text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl active:scale-95 transition-all">Daily History</button>
+        <!-- Bottom Action -->
+        <div class="w-full mt-1 sm:mt-2 md:mt-0">
+            <button onclick="toggleModal('history-modal')" class="w-full py-2.5 sm:py-3 md:py-3.5 lg:py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[9px] sm:text-[10px] md:text-[10.5px] lg:text-[11px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] shadow-lg active:scale-95 transition-all text-current">
+                View Daily History
+            </button>
         </div>
     </main>
 
     <!-- Modal: Stats/Chart -->
-    <div id="stats-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div id="stats-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 hidden">
         <div class="absolute inset-0 modal-overlay" onclick="toggleModal('stats-modal')"></div>
-        <div class="modal-container w-full max-w-md rounded-t-[2.5rem] sm:rounded-[3rem] z-10 flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="p-6 sm:p-8 border-b border-slate-500/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
-                <h3 class="serif text-2xl">Weekly Insights</h3>
-                <button onclick="toggleModal('stats-modal')" class="opacity-30 hover:opacity-100 text-3xl sm:text-4xl">&times;</button>
+        <div class="modal-container w-full max-w-md rounded-t-[2rem] sm:rounded-[2.5rem] z-10 flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden">
+            <div class="p-4 sm:p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
+                <h3 class="serif text-lg sm:text-xl md:text-2xl">Weekly Insights</h3>
+                <button onclick="toggleModal('stats-modal')" class="opacity-50 hover:opacity-100 text-2xl sm:text-3xl leading-none">&times;</button>
             </div>
-            <div class="p-6 sm:p-8 flex flex-col items-center">
-                <div id="chart-container" class="w-full h-48 flex items-end justify-between gap-2 px-2 pb-2 border-b border-slate-500/10"></div>
-                <div class="w-full flex justify-between px-2 pt-2 text-[8px] uppercase font-bold opacity-40" id="chart-labels"></div>
-                <p id="chart-insight" class="mt-6 text-center text-sm font-serif italic opacity-80">Loading wisdom...</p>
+            <div class="p-4 sm:p-6 flex flex-col items-center">
+                <div id="chart-container" class="w-full h-32 sm:h-40 md:h-48 flex items-end justify-between gap-1.5 sm:gap-2 px-2 pb-2 border-b border-white/10"></div>
+                <div class="w-full flex justify-between px-2 pt-2 text-[8px] sm:text-[9px] uppercase font-bold opacity-50" id="chart-labels"></div>
+                <p id="chart-insight" class="mt-4 sm:mt-6 text-center text-xs sm:text-sm font-serif italic opacity-70 px-2">Loading wisdom...</p>
             </div>
         </div>
     </div>
 
     <!-- Modal: User Manual -->
-    <div id="help-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div id="help-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 hidden">
         <div class="absolute inset-0 modal-overlay" onclick="toggleModal('help-modal')"></div>
-        <div class="modal-container w-full max-w-md rounded-t-[2.5rem] sm:rounded-[3rem] z-10 flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="p-6 sm:p-8 border-b border-slate-500/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
-                <h3 class="serif text-2xl">User Manual</h3>
-                <button onclick="toggleModal('help-modal')" class="opacity-30 hover:opacity-100 text-3xl sm:text-4xl">&times;</button>
+        <div class="modal-container w-full max-w-md rounded-t-[2rem] sm:rounded-[2.5rem] z-10 flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden">
+            <div class="p-4 sm:p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
+                <h3 class="serif text-lg sm:text-xl md:text-2xl">User Manual</h3>
+                <button onclick="toggleModal('help-modal')" class="opacity-50 hover:opacity-100 text-2xl sm:text-3xl leading-none">&times;</button>
             </div>
-            <div class="p-6 sm:p-8 overflow-y-auto help-section bg-slate-500/5">
+            <div class="p-4 sm:p-6 overflow-y-auto help-section">
                 <p>Welcome to <strong>Divine Counter</strong>.</p>
                 <h4>1. Daily Reset System</h4>
                 <p>The "Daily Session" and "Today's Rounds" <strong>reset to zero automatically at midnight</strong>. Lifetime stats are preserved.</p>
@@ -294,31 +437,31 @@
     </div>
 
     <!-- Modal: Mantra Admin -->
-    <div id="mantra-list-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div id="mantra-list-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 hidden">
         <div class="absolute inset-0 modal-overlay" onclick="toggleModal('mantra-list-modal')"></div>
-        <div class="modal-container w-full max-w-md rounded-t-[2.5rem] sm:rounded-[3rem] z-10 flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="p-6 sm:p-8 border-b border-slate-500/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
-                <h3 class="serif text-2xl">Manage Mantras</h3>
-                <button onclick="toggleModal('mantra-list-modal')" class="opacity-30 hover:opacity-100 text-3xl sm:text-4xl">&times;</button>
+        <div class="modal-container w-full max-w-md rounded-t-[2rem] sm:rounded-[2.5rem] z-10 flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden">
+            <div class="p-4 sm:p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
+                <h3 class="serif text-lg sm:text-xl md:text-2xl">Manage Mantras</h3>
+                <button onclick="toggleModal('mantra-list-modal')" class="opacity-50 hover:opacity-100 text-2xl sm:text-3xl leading-none">&times;</button>
             </div>
             
-            <div class="p-6 bg-slate-500/5 border-b border-slate-500/10">
-                <p class="text-[10px] font-black uppercase tracking-widest opacity-40 mb-4">Initialize New Practice</p>
-                <div class="space-y-3">
-                    <input type="text" id="new-mantra-name" placeholder="Mantra Name" class="divine-input">
+            <div class="p-4 sm:p-6 border-b border-white/10 bg-white/5">
+                <p class="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest opacity-50 mb-2 sm:mb-3">Initialize New Practice</p>
+                <div class="space-y-2 sm:space-y-3">
+                    <input type="text" id="new-mantra-name" placeholder="Mantra Name" class="divine-input text-xs sm:text-sm">
                     <div class="flex gap-2">
-                        <input type="number" id="new-mantra-goal" placeholder="Daily Goal" class="divine-input" value="108">
-                        <button onclick="app.addNewMantra()" class="bg-slate-900 text-white px-6 sm:px-8 rounded-xl font-black text-xs uppercase tracking-widest hover:opacity-90">Add</button>
+                        <input type="number" id="new-mantra-goal" placeholder="Daily Goal" class="divine-input text-xs sm:text-sm" value="108">
+                        <button onclick="app.addNewMantra()" class="bg-current text-white px-4 sm:px-6 rounded-xl font-bold text-[10px] sm:text-xs uppercase tracking-widest hover:opacity-90 flex items-center justify-center whitespace-nowrap" style="background: var(--text-secondary); color: var(--bg-main);">Add</button>
                     </div>
                 </div>
             </div>
 
-            <div id="mantra-list-container" class="p-6 space-y-4 overflow-y-auto"></div>
+            <div id="mantra-list-container" class="p-4 sm:p-6 space-y-2 sm:space-y-3 overflow-y-auto"></div>
 
-            <div class="p-6 sm:p-8 bg-slate-500/5 mt-auto border-t border-slate-500/10">
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="app.exportData()" class="py-3 bg-white/5 border border-slate-500/10 opacity-60 rounded-xl text-[10px] font-black uppercase tracking-widest hover:opacity-100">Backup JSON</button>
-                    <label class="py-3 bg-white/5 border border-slate-500/10 opacity-60 rounded-xl text-[10px] font-black uppercase tracking-widest text-center cursor-pointer">
+            <div class="p-4 sm:p-6 mt-auto border-t border-white/10 bg-white/5">
+                <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                    <button onclick="app.exportData()" class="py-2.5 sm:py-3 border border-white/10 rounded-xl text-[9px] sm:text-[10px] font-bold uppercase tracking-widest hover:bg-white/5">Backup JSON</button>
+                    <label class="py-2.5 sm:py-3 border border-white/10 rounded-xl text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-center cursor-pointer hover:bg-white/5 flex items-center justify-center">
                         Restore <input type="file" class="hidden" onchange="app.importData(event)">
                     </label>
                 </div>
@@ -327,31 +470,31 @@
     </div>
 
     <!-- Modal: History -->
-    <div id="history-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
+    <div id="history-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 hidden">
         <div class="absolute inset-0 modal-overlay" onclick="toggleModal('history-modal')"></div>
-        <div class="modal-container w-full max-w-md rounded-t-[2.5rem] sm:rounded-[3rem] z-10 flex flex-col max-h-[85vh] overflow-hidden">
-            <div class="p-6 sm:p-8 border-b border-slate-500/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
-                <div>
-                    <h3 class="serif text-2xl">Detailed History</h3>
-                    <p id="history-mantra-name" class="text-[10px] uppercase tracking-widest opacity-40 font-black mt-1">Practice Stats</p>
+        <div class="modal-container w-full max-w-md rounded-t-[2rem] sm:rounded-[2.5rem] z-10 flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden">
+            <div class="p-4 sm:p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-inherit z-10">
+                <div class="min-w-0 flex-1 pr-2">
+                    <h3 class="serif text-lg sm:text-xl md:text-2xl">Detailed History</h3>
+                    <p id="history-mantra-name" class="text-[9px] sm:text-[10px] uppercase tracking-widest opacity-50 font-bold mt-0.5 sm:mt-1 truncate">Practice Stats</p>
                 </div>
-                <button onclick="toggleModal('history-modal')" class="opacity-30 hover:opacity-100 text-3xl sm:text-4xl">&times;</button>
+                <button onclick="toggleModal('history-modal')" class="opacity-50 hover:opacity-100 text-2xl sm:text-3xl leading-none flex-shrink-0">&times;</button>
             </div>
-            <div class="px-6 sm:px-8 py-4 bg-slate-500/5 border-b border-slate-500/10 flex justify-between items-center">
-                <span class="text-[10px] uppercase font-black opacity-30 tracking-tighter">Overall CSV Report</span>
-                <button title="Export All Mantras Data" onclick="app.exportOverallCSV()" class="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <div class="px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 bg-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                <span class="text-[9px] sm:text-[10px] uppercase font-bold opacity-40 tracking-wider">Overall Report</span>
+                <button title="Export All Mantras Data" onclick="app.exportOverallCSV()" class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 border border-white/10 rounded-lg text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white/5">
+                    <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     Export All
                 </button>
             </div>
-            <div id="history-content" class="p-6 overflow-y-auto"></div>
+            <div id="history-content" class="p-4 sm:p-6 overflow-y-auto"></div>
         </div>
     </div>
 
     <script>
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        const sounds = {
+        var sounds = {
             tap: () => {
                 if(audioCtx.state === 'suspended') audioCtx.resume();
                 const osc = audioCtx.createOscillator();
@@ -383,7 +526,7 @@
             }
         };
 
-        const app = {
+        var app = {
             data: { mantras: [], activeId: null, theme: 'dark' },
             pendingDeleteId: null,
             pendingResetId: null,
@@ -564,7 +707,8 @@
             setActive(id) {
                 if (this.pendingDeleteId || this.pendingResetId || this.pendingResetRoundsId || this.pendingEditGoalId) return;
                 this.data.activeId = id;
-                this.save(); this.render();
+                this.save();
+                this.render();
                 toggleModal('mantra-list-modal');
             },
 
@@ -688,26 +832,32 @@
                     const isR = this.pendingResetId === x.id;
                     const isRR = this.pendingResetRoundsId === x.id;
                     const isE = this.pendingEditGoalId === x.id;
-                    const itemClass = active ? (isLight ? 'bg-slate-900 text-white shadow-lg' : 'bg-orange-600 text-black shadow-xl') : 'bg-slate-500/5 border border-slate-500/10';
+                    const itemClass = active ? 
+                        (isLight ? 'bg-slate-900 text-white shadow-lg border-transparent' : 'bg-orange-600 text-black shadow-xl border-transparent') : 
+                        'bg-white/5 border-white/10 hover:border-white/20';
+
+                    const iconColor = active ? 'text-current opacity-80' : 'text-current opacity-50 hover:opacity-100';
 
                     return `
-                        <div onclick="app.setActive('${x.id}')" class="p-5 rounded-3xl transition-all cursor-pointer mb-2 ${itemClass}">
-                            <div class="flex justify-between items-center">
-                                <div class="flex-grow">
+                        <div onclick="app.setActive('${x.id}')" class="p-4 rounded-2xl border transition-all cursor-pointer mb-2 ${itemClass}">
+                            <div class="flex justify-between items-center gap-2">
+                                <div class="flex-grow min-w-0">
                                     <div class="flex items-center mb-1">
                                         ${active ? '<span class="active-indicator"></span>' : ''}
-                                        <h4 class="font-bold text-sm">${x.name}</h4>
+                                        <h4 class="font-bold text-xs sm:text-sm truncate">${x.name}</h4>
                                     </div>
-                                    ${isE ? `<div class="flex gap-2" onclick="event.stopPropagation()">
-                                            <input type="number" id="edit-goal-${x.id}" value="${x.goal}" class="w-16 h-7 bg-black/10 rounded px-2 text-[10px]">
+                                    ${isE ? `
+                                        <div class="flex gap-2" onclick="event.stopPropagation()">
+                                            <input type="number" id="edit-goal-${x.id}" value="${x.goal}" class="w-16 h-7 bg-black/10 rounded px-2 text-[10px] text-current">
                                             <button onclick="app.saveEditGoal('${x.id}', event)" class="text-[9px] font-black uppercase">Save</button>
-                                        </div>` : `<p class="text-[9px] uppercase tracking-widest opacity-60">${x.total} Total • Goal ${x.goal}</p>`}
+                                        </div>
+                                    ` : `<p class="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-60 truncate">${x.total} Total • Goal ${x.goal}</p>`}
                                 </div>
-                                <div class="flex items-center gap-1 opacity-60 hover:opacity-100">
-                                    <button onclick="app.startEditGoal('${x.id}', event)" class="p-2 ${isE ? 'hidden' : ''}"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
-                                    <button onclick="app.resetRounds('${x.id}', event)" class="px-2 py-2 rounded-xl text-[9px] font-black uppercase transition-all">${isRR ? 'Round?' : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'}</button>
-                                    <button onclick="app.resetTotalOnly('${x.id}', event)" class="px-2 py-2 rounded-xl text-[9px] font-black uppercase transition-all">${isR ? 'Total?' : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>'}</button>
-                                    <button onclick="app.deleteMantra('${x.id}', event)" class="px-2 py-2 rounded-xl text-[9px] font-black uppercase transition-all">${isD ? 'Del?' : '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>'}</button>
+                                <div class="flex items-center gap-0.5 sm:gap-1 ${iconColor} mantra-card-actions flex-shrink-0">
+                                    <button title="Edit Goal" onclick="app.startEditGoal('${x.id}', event)" class="p-1.5 sm:p-2 ${isE ? 'hidden' : ''}"><svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                                    <button title="Reset Round (Daily)" onclick="app.resetRounds('${x.id}', event)" class="px-1.5 sm:px-2 py-1.5 sm:py-2 rounded-xl text-[8px] sm:text-[9px] font-black uppercase transition-all ${isRR ? 'bg-white/20' : ''}">${isRR ? 'Rnd?' : '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>'}</button>
+                                    <button title="Reset Total (Lifetime)" onclick="app.resetTotalOnly('${x.id}', event)" class="px-1.5 sm:px-2 py-1.5 sm:py-2 rounded-xl text-[8px] sm:text-[9px] font-black uppercase transition-all ${isR ? 'bg-white/20' : ''}">${isR ? 'Tot?' : '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>'}</button>
+                                    <button title="Delete" onclick="app.deleteMantra('${x.id}', event)" class="px-1.5 sm:px-2 py-1.5 sm:py-2 rounded-xl text-[8px] sm:text-[9px] font-black uppercase transition-all ${isD ? 'bg-white/20' : ''}">${isD ? 'Del?' : '<svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>'}</button>
                                 </div>
                             </div>
                         </div>
@@ -717,17 +867,17 @@
                 const historyBox = document.getElementById('history-content');
                 const dates = Object.keys(m.history).sort((a,b) => new Date(b) - new Date(a));
                 if (dates.length === 0) {
-                    historyBox.innerHTML = `<div class="py-20 text-center opacity-20 serif">Logs Empty.</div>`;
+                    historyBox.innerHTML = `<div class="py-16 sm:py-20 text-center opacity-30 text-xs sm:text-sm italic serif">No records yet.</div>`;
                 } else {
                     historyBox.innerHTML = dates.map(d => {
                         const count = m.history[d];
                         const perc = Math.min(Math.round((count / m.goal) * 100), 100);
-                        return `<div class="mb-4 bg-slate-500/5 p-5 rounded-[2rem] border border-slate-500/10">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div><span class="block font-bold text-sm">${new Date(d).toLocaleDateString()}</span><span class="text-[9px] uppercase tracking-widest opacity-40">${(count/108).toFixed(1)} Rounds</span></div>
-                                    <div class="text-right"><span class="text-2xl font-light gold-glow">${count}</span><span class="block text-[8px] opacity-40 font-black tracking-widest">${perc}% Goal</span></div>
+                        return `<div class="mb-2 sm:mb-3 bg-white/5 p-3 sm:p-4 rounded-2xl border border-white/10">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div><span class="block font-bold text-[11px] sm:text-xs">${new Date(d).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</span><span class="text-[8px] sm:text-[9px] uppercase tracking-widest opacity-50">${(count/108).toFixed(1)} Rounds</span></div>
+                                    <div class="text-right"><span class="text-lg sm:text-xl font-light gold-glow">${count}</span><span class="block text-[7px] sm:text-[8px] opacity-50 font-black tracking-widest">${perc}% Goal</span></div>
                                 </div>
-                                <div class="w-full h-1 bg-black/5 rounded-full overflow-hidden"><div class="h-full bg-slate-900 dark:bg-orange-600 transition-all duration-1000" style="width: ${perc}%"></div></div>
+                                <div class="w-full h-1 bg-black/10 rounded-full overflow-hidden"><div class="h-full bg-current opacity-80 transition-all duration-1000" style="width: ${perc}%; background-color: var(--accent);"></div></div>
                             </div>`;
                     }).join('');
                 }
