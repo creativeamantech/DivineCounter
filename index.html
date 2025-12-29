@@ -189,11 +189,13 @@
 
         /* RESPONSIVE IMPROVEMENTS */
         
+        /* Extra small devices (portrait phones, less than 375px) */
         @media (max-width: 374px) {
             #toast { font-size: 9px; padding: 8px 16px; bottom: 20px; }
             .counter-btn { min-width: 180px !important; min-height: 180px !important; }
         }
 
+        /* Small devices (landscape phones, 576px and up) */
         @media (min-width: 576px) {
             .modal-container {
                 border-radius: 2.5rem;
@@ -201,6 +203,7 @@
             }
         }
 
+        /* Medium devices (tablets, 768px and up) */
         @media (min-width: 768px) {
             .modal-container {
                 max-width: 600px;
@@ -212,6 +215,7 @@
             }
         }
 
+        /* Large devices (desktops, 992px and up) */
         @media (min-width: 992px) {
             body {
                 overflow: hidden;
@@ -223,6 +227,7 @@
             }
         }
 
+        /* Extra large devices (large desktops, 1200px and up) */
         @media (min-width: 1200px) {
             .counter-btn {
                 max-width: 500px !important;
@@ -230,6 +235,7 @@
             }
         }
 
+        /* Landscape orientation specific */
         @media (orientation: landscape) and (max-height: 600px) {
             .counter-btn {
                 max-width: 45vh !important;
@@ -249,6 +255,7 @@
             }
         }
 
+        /* Very small landscape (iPhone SE landscape, etc) */
         @media (orientation: landscape) and (max-height: 450px) {
             .counter-btn {
                 max-width: 40vh !important;
@@ -262,6 +269,7 @@
             }
         }
 
+        /* Mantra card responsive improvements */
         .mantra-card-actions {
             display: flex;
             gap: 0.25rem;
@@ -279,10 +287,12 @@
             }
         }
 
+        /* Better text scaling */
         @media (max-width: 360px) {
             .serif.text-xl { font-size: 1.125rem; }
         }
 
+        /* Prevent text overflow */
         .truncate-responsive {
             overflow: hidden;
             text-overflow: ellipsis;
@@ -295,6 +305,7 @@
             }
         }
 
+        /* Modal height adjustments for small screens */
         @media (max-height: 600px) {
             .modal-container {
                 max-height: 95vh;
@@ -312,7 +323,7 @@
 
     <div id="toast">Divine Message</div>
 
-    <!-- Header -->
+    <!-- Header: Responsive spacing and sizing -->
     <header class="w-full max-w-3xl px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 lg:p-6 flex justify-between items-center z-20 shrink-0">
         <div class="min-w-0 flex-1 pr-2">
             <h1 class="serif text-lg sm:text-xl md:text-2xl lg:text-3xl tracking-tight gold-glow truncate-responsive">Divine Counter</h1>
@@ -335,10 +346,10 @@
         </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- Main Content Area: Improved responsive layout -->
     <main class="flex-grow flex flex-col items-center justify-between w-full max-w-md px-4 sm:px-6 pb-4 sm:pb-6 pt-1 sm:pt-2 md:justify-evenly">
         
-        <!-- Stats -->
+        <!-- Stats and Name -->
         <div class="w-full text-center space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
             <h2 id="display-name" class="serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl italic tracking-wide break-words px-2 leading-tight min-h-[2rem] sm:min-h-[2.5rem]">—</h2>
             
@@ -368,10 +379,12 @@
             </div>
         </div>
 
-        <!-- Tap Area -->
+        <!-- Tap Area: Enhanced responsive sizing -->
         <div class="relative group flex items-center justify-center flex-grow max-h-[45vh] sm:max-h-[50vh] md:max-h-none w-full" id="ripple-anchor">
             <div class="absolute -inset-6 sm:-inset-8 bg-orange-500/5 rounded-full blur-2xl group-active:bg-orange-500/10 transition-all opacity-50 pointer-events-none"></div>
+            <!-- Improved responsive sizing with better constraints -->
             <button id="main-tap-area" onclick="app.increment()" class="counter-btn w-[55vmin] h-[55vmin] sm:w-[60vmin] sm:h-[60vmin] min-w-[200px] min-h-[200px] sm:min-w-[220px] sm:min-h-[220px] max-w-[280px] max-h-[280px] sm:max-w-[320px] sm:max-h-[320px] md:max-w-[380px] md:max-h-[380px] lg:max-w-[400px] lg:max-h-[400px] rounded-full flex flex-col items-center justify-center relative z-10 overflow-hidden outline-none tap-highlight-transparent">
+                <!-- Responsive text sizing -->
                 <span id="session-display" class="text-[18vmin] sm:text-[20vmin] md:text-8xl lg:text-9xl font-thin serif gold-glow select-none leading-none">0</span>
                 <div class="w-8 sm:w-10 md:w-11 lg:w-12 h-px bg-current opacity-20 my-1.5 sm:my-2 md:my-3 lg:my-4"></div>
                 <span class="text-[2vmin] sm:text-[2.5vmin] md:text-[9px] lg:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] md:tracking-[0.4em] lg:tracking-[0.5em] font-bold opacity-40 select-none">Daily Session</span>
@@ -492,9 +505,9 @@
     </div>
 
     <script>
-        var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        var sounds = {
+        const sounds = {
             tap: () => {
                 if(audioCtx.state === 'suspended') audioCtx.resume();
                 const osc = audioCtx.createOscillator();
@@ -526,7 +539,7 @@
             }
         };
 
-        var app = {
+        const app = {
             data: { mantras: [], activeId: null, theme: 'dark' },
             pendingDeleteId: null,
             pendingResetId: null,
@@ -839,7 +852,7 @@
                     const iconColor = active ? 'text-current opacity-80' : 'text-current opacity-50 hover:opacity-100';
 
                     return `
-                        <div onclick="app.setActive('${x.id}')" class="p-4 rounded-2xl border transition-all cursor-pointer mb-2 ${itemClass}">
+                        <div onclick="app.setActive('${x.id}')" class="p-3 sm:p-4 rounded-2xl border transition-all cursor-pointer mb-2 ${itemClass}">
                             <div class="flex justify-between items-center gap-2">
                                 <div class="flex-grow min-w-0">
                                     <div class="flex items-center mb-1">
