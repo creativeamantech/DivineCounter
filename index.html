@@ -899,7 +899,7 @@
                         });
                     });
                 });
-                allEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+                allEntries.sort((a, b) => b.date > a.date ? 1 : (b.date < a.date ? -1 : 0));
                 allEntries.forEach(e => rows.push([e.date, e.name, e.taps, e.rounds, e.goal, e.status]));
                 const blob = new Blob([rows.map(r => r.join(",")).join("\n")], { type: 'text/csv;charset=utf-8;' });
                 const a = document.createElement('a');
@@ -1020,7 +1020,7 @@
                 }).join('');
 
                 const historyBox = document.getElementById('history-content');
-                const dates = Object.keys(m.history).sort((a,b) => new Date(b) - new Date(a));
+                const dates = Object.keys(m.history).sort().reverse();
                 if (dates.length === 0) {
                     historyBox.innerHTML = `<div class="py-20 text-center opacity-30 text-sm italic serif">No records yet.</div>`;
                 } else {
