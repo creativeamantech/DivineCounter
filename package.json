@@ -1,0 +1,12 @@
+{
+  "name": "divine-counter-tests",
+  "version": "1.0.0",
+  "description": "Tests for Divine Counter",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
