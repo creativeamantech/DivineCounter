@@ -654,6 +654,7 @@
     </div>
 
     <script>
+        const ROUND_SIZE = 108;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         const sounds = {
@@ -700,7 +701,7 @@
                 if (saved) { try { this.data = JSON.parse(saved); } catch(e) {} }
                 
                 if (!this.data.mantras || this.data.mantras.length === 0) {
-                    this.data.mantras = [this.newMantraObject("Om Namah Shivaya", 108)];
+                    this.data.mantras = [this.newMantraObject("Om Namah Shivaya", ROUND_SIZE)];
                     this.data.activeId = this.data.mantras[0].id;
                 }
                 
@@ -756,7 +757,7 @@
                 return {
                     id: 'm-' + Math.random().toString(36).substr(2, 9),
                     name: name || "Mantra",
-                    goal: parseInt(goal) || 108,
+                    goal: parseInt(goal) || ROUND_SIZE,
                     session: 0,
                     total: 0,
                     history: {},
@@ -779,7 +780,7 @@
                 m.history[today] = (m.history[today] || 0) + 1;
                 
                 sounds.tap();
-                if (m.session % 108 === 0) {
+                if (m.session % ROUND_SIZE === 0) {
                     sounds.mala(); this.visualFeedback();
                     if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
                 } else if (navigator.vibrate) {
@@ -894,7 +895,7 @@
                     Object.keys(m.history).forEach(dateStr => {
                         const count = m.history[dateStr];
                         allEntries.push({
-                            date: dateStr, name: m.name, taps: count, rounds: (count / 108).toFixed(1),
+                            date: dateStr, name: m.name, taps: count, rounds: (count / ROUND_SIZE).toFixed(1),
                             goal: m.goal, status: Math.round((count / m.goal) * 100) + "%"
                         });
                     });
@@ -970,9 +971,9 @@
                 document.getElementById('active-mantra-subtitle').innerText = m.name;
                 
                 document.getElementById('session-display').innerText = m.session;
-                document.getElementById('rounds-count').innerText = Math.floor(m.session / 108);
+                document.getElementById('rounds-count').innerText = Math.floor(m.session / ROUND_SIZE);
                 document.getElementById('lifetime-count').innerText = m.total;
-                document.getElementById('lifetime-rounds-sub').innerText = Math.floor(m.total / 108) + " Rounds";
+                document.getElementById('lifetime-rounds-sub').innerText = Math.floor(m.total / ROUND_SIZE) + " Rounds";
 
                 const tk = new Date().toISOString().split('T')[0];
                 const tc = m.history[tk] || 0;
@@ -1029,7 +1030,7 @@
                         const perc = Math.min(Math.round((count / m.goal) * 100), 100);
                         return `<div class="mb-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                                 <div class="flex justify-between items-start mb-2">
-                                    <div><span class="block font-bold text-xs">${new Date(d).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</span><span class="text-[9px] uppercase tracking-widest opacity-50">${(count/108).toFixed(1)} Rounds</span></div>
+                                    <div><span class="block font-bold text-xs">${new Date(d).toLocaleDateString(undefined, {month:'short', day:'numeric'})}</span><span class="text-[9px] uppercase tracking-widest opacity-50">${(count/ROUND_SIZE).toFixed(1)} Rounds</span></div>
                                     <div class="text-right"><span class="text-xl font-light gold-glow">${count}</span><span class="block text-[8px] opacity-50 font-black tracking-widest">${perc}% Goal</span></div>
                                 </div>
                                 <div class="w-full h-1 bg-black/10 rounded-full overflow-hidden"><div class="h-full bg-current opacity-80 transition-all duration-1000" style="width: ${perc}%; background-color: var(--accent);"></div></div>
