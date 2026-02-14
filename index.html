@@ -981,7 +981,8 @@
                 document.getElementById('goal-bar').style.width = cp + '%';
 
                 const list = document.getElementById('mantra-list-container');
-                list.innerHTML = this.data.mantras.map(x => {
+                if (!document.getElementById('mantra-list-modal').classList.contains('hidden')) {
+                    list.innerHTML = this.data.mantras.map(x => {
                     const active = x.id === this.data.activeId;
                     const isD = this.pendingDeleteId === x.id;
                     const isR = this.pendingResetId === x.id;
@@ -1018,9 +1019,11 @@
                         </div>
                     `;
                 }).join('');
+                }
 
                 const historyBox = document.getElementById('history-content');
-                const dates = Object.keys(m.history).sort((a,b) => new Date(b) - new Date(a));
+                if (!document.getElementById('history-modal').classList.contains('hidden')) {
+                    const dates = Object.keys(m.history).sort((a,b) => new Date(b) - new Date(a));
                 if (dates.length === 0) {
                     historyBox.innerHTML = `<div class="py-20 text-center opacity-30 text-sm italic serif">No records yet.</div>`;
                 } else {
@@ -1035,6 +1038,7 @@
                                 <div class="w-full h-1 bg-black/10 rounded-full overflow-hidden"><div class="h-full bg-current opacity-80 transition-all duration-1000" style="width: ${perc}%; background-color: var(--accent);"></div></div>
                             </div>`;
                     }).join('');
+                }
                 }
             }
         };
