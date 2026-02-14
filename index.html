@@ -788,36 +788,37 @@
                 this.save(); this.render();
             },
 
-            resetRounds(id, event) {
-                if (event) event.stopPropagation();
-                if (this.pendingResetRoundsId === id) {
-                    const m = this.data.mantras.find(x => x.id === id);
-                    m.session = 0; 
-                    this.pendingResetRoundsId = null;
-                    this.showToast(`Daily Round Reset`);
+            confirmAction(id, pendingKey, action) {
+                if (this[pendingKey] === id) {
+                    action();
+                    this[pendingKey] = null;
                     this.save(); this.render();
                 } else {
-                    this.pendingResetRoundsId = id;
-                    this.pendingDeleteId = this.pendingResetId = this.pendingEditGoalId = null;
+                    this[pendingKey] = id;
+                    ['pendingDeleteId', 'pendingResetId', 'pendingResetRoundsId', 'pendingEditGoalId'].forEach(key => {
+                        if (key !== pendingKey) this[key] = null;
+                    });
                     this.render();
-                    setTimeout(() => { if(this.pendingResetRoundsId === id) { this.pendingResetRoundsId = null; this.render(); } }, 3000);
+                    setTimeout(() => { if(this[pendingKey] === id) { this[pendingKey] = null; this.render(); } }, 3000);
                 }
+            },
+
+            resetRounds(id, event) {
+                if (event) event.stopPropagation();
+                this.confirmAction(id, 'pendingResetRoundsId', () => {
+                    const m = this.data.mantras.find(x => x.id === id);
+                    m.session = 0; 
+                    this.showToast(`Daily Round Reset`);
+                });
             },
 
             resetTotalOnly(id, event) {
                 if (event) event.stopPropagation();
-                if (this.pendingResetId === id) {
+                this.confirmAction(id, 'pendingResetId', () => {
                     const m = this.data.mantras.find(x => x.id === id);
                     m.total = 0; 
-                    this.pendingResetId = null;
                     this.showToast(`Lifetime Total Reset`);
-                    this.save(); this.render();
-                } else {
-                    this.pendingResetId = id;
-                    this.pendingDeleteId = this.pendingResetRoundsId = this.pendingEditGoalId = null;
-                    this.render();
-                    setTimeout(() => { if(this.pendingResetId === id) { this.pendingResetId = null; this.render(); } }, 3000);
-                }
+                });
             },
 
             startEditGoal(id, event) {
@@ -852,18 +853,11 @@
             deleteMantra(id, event) {
                 if (event) event.stopPropagation();
                 if (this.data.mantras.length <= 1) return this.showToast("1 Required");
-                if (this.pendingDeleteId === id) {
+                this.confirmAction(id, 'pendingDeleteId', () => {
                     this.data.mantras = this.data.mantras.filter(m => m.id !== id);
                     if (this.data.activeId === id) this.data.activeId = this.data.mantras[0].id;
-                    this.pendingDeleteId = null;
                     this.showToast("Mantra Removed");
-                    this.save(); this.render();
-                } else {
-                    this.pendingDeleteId = id;
-                    this.pendingResetId = this.pendingResetRoundsId = this.pendingEditGoalId = null;
-                    this.render();
-                    setTimeout(() => { if(this.pendingDeleteId === id) { this.pendingDeleteId = null; this.render(); } }, 3000);
-                }
+                });
             },
 
             setActive(id) {
