@@ -749,7 +749,19 @@
                 setTimeout(() => t.classList.remove('visible'), 2500);
             },
 
-            save() { localStorage.setItem('divine_final_v20', JSON.stringify(this.data)); },
+            saveTimer: null,
+
+            save() {
+                if (this.saveTimer) { clearTimeout(this.saveTimer); this.saveTimer = null; }
+                localStorage.setItem('divine_final_v20', JSON.stringify(this.data));
+            },
+
+            requestSave() {
+                if (this.saveTimer) clearTimeout(this.saveTimer);
+                this.saveTimer = setTimeout(() => {
+                    this.save();
+                }, 1000);
+            },
 
             newMantraObject(name, goal) {
                 const today = new Date().toISOString().split('T')[0];
@@ -785,7 +797,7 @@
                 } else if (navigator.vibrate) {
                     navigator.vibrate(10);
                 }
-                this.save(); this.render();
+                this.requestSave(); this.render();
             },
 
             resetRounds(id, event) {
