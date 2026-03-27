@@ -955,11 +955,7 @@
                 else insight.innerText = "Consistency brings peace.";
             },
 
-            render() {
-                const m = this.getActive();
-                if (!m) return;
-                const isLight = this.data.theme === 'light';
-
+            updateMetrics(m) {
                 document.title = `(${m.session}) Divine Counter`;
                 document.getElementById('display-name').innerText = m.name;
                 document.getElementById('active-mantra-subtitle').innerText = m.name;
@@ -974,8 +970,11 @@
                 const cp = Math.min((tc / m.goal) * 100, 100);
                 document.getElementById('goal-section').classList.remove('hidden');
                 document.getElementById('goal-bar').style.width = cp + '%';
+            },
 
+            renderMantraList() {
                 const list = document.getElementById('mantra-list-container');
+                const isLight = this.data.theme === 'light';
                 list.innerHTML = this.data.mantras.map(x => {
                     const active = x.id === this.data.activeId;
                     const isD = this.pendingDeleteId === x.id;
@@ -1013,7 +1012,9 @@
                         </div>
                     `;
                 }).join('');
+            },
 
+            renderHistoryList(m) {
                 const historyBox = document.getElementById('history-content');
                 const dates = Object.keys(m.history).sort().reverse();
                 if (dates.length === 0) {
@@ -1031,6 +1032,15 @@
                             </div>`;
                     }).join('');
                 }
+            },
+
+            render() {
+                const m = this.getActive();
+                if (!m) return;
+
+                this.updateMetrics(m);
+                this.renderMantraList();
+                this.renderHistoryList(m);
             }
         };
 
